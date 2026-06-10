@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOMSITE — Скоро открытие</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600;700;900&family=JetBrains+Mono:wght@300;400;700&display=swap"
+          rel="stylesheet">
+    <link rel="icon" href="favicon.ico" sizes="any">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="favicon-192x192.png">
+    <style>
+        :root {
+            --bg: #020510;
+            --surface: #060d1f;
+            --cyan: #00e5ff;
+            --blue: #0066ff;
+            --purple: #7b2fff;
+            --text: #e8f0fe;
+            --muted: #8899bb;
+            --border: rgba(0, 229, 255, 0.15);
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            font-family: 'Exo 2', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            overflow: hidden;
+            cursor: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* CURSOR */
+        .cursor {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: var(--cyan);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transition: transform 0.1s;
+            mix-blend-mode: screen;
+            top: 0;
+            left: 0;
+        }
+
+        .cursor-ring {
+            position: fixed;
+            width: 36px;
+            height: 36px;
+            border: 1px solid rgba(0, 229, 255, 0.5);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9998;
+            top: 0;
+            left: 0;
+            transition: border-color 0.2s;
+        }
+
+        /* BG GRID */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: linear-gradient(rgba(0, 229, 255, 0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 229, 255, 0.04) 1px, transparent 1px);
+            background-size: 60px 60px;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        #particles {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* SCANLINE */
+        .scanline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(0, 229, 255, 0.3), transparent);
+            z-index: 50;
+            pointer-events: none;
+            animation: scanline-move 8s linear infinite;
+        }
+
+        @keyframes scanline-move {
+            0% {
+                top: 0;
+                opacity: 0
+            }
+            5% {
+                opacity: 1
+            }
+            95% {
+                opacity: 1
+            }
+            100% {
+                top: 100vh;
+                opacity: 0
+            }
+        }
+
+        /* ORBS */
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(90px);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .orb1 {
+            width: 700px;
+            height: 700px;
+            background: radial-gradient(circle, rgba(0, 102, 255, 0.18) 0%, transparent 70%);
+            top: -200px;
+            left: -200px;
+            animation: drift1 10s ease-in-out infinite;
+        }
+
+        .orb2 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(123, 47, 255, 0.12) 0%, transparent 70%);
+            bottom: -100px;
+            right: -100px;
+            animation: drift2 12s ease-in-out infinite;
+        }
+
+        .orb3 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(0, 229, 255, 0.07) 0%, transparent 70%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: pulse-orb 5s ease-in-out infinite;
+        }
+
+        @keyframes drift1 {
+            0%, 100% {
+                transform: translate(0, 0)
+            }
+            50% {
+                transform: translate(80px, 50px)
+            }
+        }
+
+        @keyframes drift2 {
+            0%, 100% {
+                transform: translate(0, 0)
+            }
+            50% {
+                transform: translate(-60px, -80px)
+            }
+        }
+
+        @keyframes pulse-orb {
+            0%, 100% {
+                opacity: 0.4;
+                transform: translate(-50%, -50%) scale(1)
+            }
+            50% {
+                opacity: 0.9;
+                transform: translate(-50%, -50%) scale(1.3)
+            }
+        }
+
+        /* CORNER DECORATIONS */
+        .corner {
+            position: fixed;
+            width: 36px;
+            height: 36px;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .corner-tl {
+            top: 24px;
+            left: 24px;
+            border-top: 1px solid rgba(0, 229, 255, 0.3);
+            border-left: 1px solid rgba(0, 229, 255, 0.3);
+        }
+
+        .corner-tr {
+            top: 24px;
+            right: 24px;
+            border-top: 1px solid rgba(0, 229, 255, 0.3);
+            border-right: 1px solid rgba(0, 229, 255, 0.3);
+        }
+
+        .corner-bl {
+            bottom: 24px;
+            left: 24px;
+            border-bottom: 1px solid rgba(0, 229, 255, 0.3);
+            border-left: 1px solid rgba(0, 229, 255, 0.3);
+        }
+
+        .corner-br {
+            bottom: 24px;
+            right: 24px;
+            border-bottom: 1px solid rgba(0, 229, 255, 0.3);
+            border-right: 1px solid rgba(0, 229, 255, 0.3);
+        }
+
+        /* MAIN CONTAINER */
+        .container {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            padding: 40px 24px;
+            width: 100%;
+            max-width: 640px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0;
+        }
+
+        /* LOGO */
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 52px;
+            animation: fadeInDown 0.8s ease both;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            flex-shrink: 0;
+        }
+
+        .logo-icon svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .logo-text {
+            font-weight: 900;
+            font-size: 24px;
+            letter-spacing: 5px;
+            color: #fff;
+            text-align: left;
+            line-height: 1;
+        }
+
+        .logo-text span {
+            color: var(--cyan);
+        }
+
+        .logo-sub {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            letter-spacing: 3px;
+            color: var(--cyan);
+            opacity: 0.7;
+            margin-top: 5px;
+            display: block;
+        }
+
+        /* STATUS BADGE — fixed height so text swap doesn't shift layout */
+        .status-wrap {
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 44px;
+            animation: fadeInDown 0.8s ease 0.1s both;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(0, 229, 255, 0.06);
+            border: 1px solid rgba(0, 229, 255, 0.25);
+            padding: 10px 22px;
+            border-radius: 100px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            letter-spacing: 3px;
+            color: var(--cyan);
+            white-space: nowrap;
+            transition: opacity 0.4s ease;
+        }
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            background: var(--cyan);
+            border-radius: 50%;
+            flex-shrink: 0;
+            animation: blink 1.5s ease-in-out infinite;
+            box-shadow: 0 0 8px var(--cyan);
+        }
+
+        @keyframes blink {
+            0%, 100% {
+                opacity: 1
+            }
+            50% {
+                opacity: 0.15
+            }
+        }
+
+        /* HEADLINE */
+        .headline {
+            font-size: clamp(44px, 7vw, 82px);
+            font-weight: 900;
+            line-height: 1.05;
+            letter-spacing: -2px;
+            margin-bottom: 28px;
+            animation: fadeInUp 1s ease 0.2s both;
+        }
+
+        .headline .l1 {
+            display: block;
+            color: #fff;
+        }
+
+        .headline .l2 {
+            display: block;
+            background: linear-gradient(135deg, var(--cyan) 0%, var(--blue) 50%, var(--purple) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            background-size: 200% 200%;
+            animation: grad 5s ease infinite;
+        }
+
+        @keyframes grad {
+            0% {
+                background-position: 0% 50%
+            }
+            50% {
+                background-position: 100% 50%
+            }
+            100% {
+                background-position: 0% 50%
+            }
+        }
+
+        /* SUBTEXT */
+        .subtext {
+            font-size: 16px;
+            color: var(--muted);
+            line-height: 1.8;
+            margin-bottom: 44px;
+            animation: fadeInUp 1s ease 0.3s both;
+        }
+
+        .subtext strong {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        /* FOOTER */
+        .footer-line {
+            position: fixed;
+            bottom: 28px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: rgba(136, 153, 187, 0.35);
+            z-index: 10;
+            animation: fadeIn 2s ease 1s both;
+        }
+
+        /* ANIMATIONS */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px)
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(28px)
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0
+            }
+            to {
+                opacity: 1
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<div class="scanline"></div>
+<canvas id="particles"></canvas>
+
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+<div class="orb orb3"></div>
+
+<div class="corner corner-tl"></div>
+<div class="corner corner-tr"></div>
+<div class="corner corner-bl"></div>
+<div class="corner corner-br"></div>
+
+<div class="container">
+
+    <!-- LOGO -->
+    <div class="logo">
+        <div class="logo-icon">
+            <svg viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="lg1" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#0066ff"/>
+                        <stop offset="100%" style="stop-color:#00e5ff"/>
+                    </linearGradient>
+                    <linearGradient id="lg2" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#00e5ff"/>
+                        <stop offset="100%" style="stop-color:#7b2fff"/>
+                    </linearGradient>
+                </defs>
+                <polygon points="21,2 37,11 37,31 21,40 5,31 5,11" fill="none" stroke="url(#lg1)" stroke-width="1.5"/>
+                <polygon points="21,8 32,14.5 32,27.5 21,34 10,27.5 10,14.5" fill="url(#lg2)" opacity="0.15"/>
+                <rect x="14" y="16" width="14" height="2" fill="url(#lg1)" rx="1"/>
+                <rect x="20" y="16" width="2" height="12" fill="url(#lg2)" rx="1"/>
+                <circle cx="21" cy="12" r="1.5" fill="#00e5ff" opacity="0.8">
+                    <animate attributeName="opacity" values="0.8;0.2;0.8" dur="2s" repeatCount="indefinite"/>
+                </circle>
+                <circle cx="33" cy="21" r="1" fill="#0066ff" opacity="0.6">
+                    <animate attributeName="opacity" values="0.6;0.1;0.6" dur="2.5s" repeatCount="indefinite"/>
+                </circle>
+                <circle cx="9" cy="21" r="1" fill="#7b2fff" opacity="0.6">
+                    <animate attributeName="opacity" values="0.6;0.1;0.6" dur="3s" repeatCount="indefinite"/>
+                </circle>
+            </svg>
+        </div>
+        <div>
+            <div class="logo-text">TOM<span>SITE</span></div>
+            <span class="logo-sub">AI LANDING STUDIO</span>
+        </div>
+    </div>
+
+    <!-- STATUS BADGE — fixed-height wrapper prevents layout shift -->
+    <div class="status-wrap">
+        <div class="status-badge" id="statusBadge">
+            <div class="status-dot"></div>
+            <span id="statusText">СИСТЕМА ИНИЦИАЛИЗИРУЕТСЯ</span>
+        </div>
+    </div>
+
+    <!-- HEADLINE -->
+    <h1 class="headline">
+        <span class="l1">Мы скоро</span>
+        <span class="l2">откроемся</span>
+    </h1>
+
+    <!-- SUBTEXT -->
+    <p class="subtext">
+        Готовим платформу нового поколения<br>
+        для создания <strong>AI-лендингов</strong>, которые продают.
+    </p>
+
+
+</div>
+
+<div class="footer-line">&#169; 2026 TOMSITE &nbsp;&#183;&nbsp; AI LANDING STUDIO</div>
+
+<script>
+    // CURSOR
+    var cursor = document.getElementById('cursor');
+    var cursorRing = document.getElementById('cursorRing');
+    var mx = 0, my = 0, rx = 0, ry = 0;
+    document.addEventListener('mousemove', function(e) {
+      mx = e.clientX; my = e.clientY;
+      cursor.style.left = (mx - 5) + 'px';
+      cursor.style.top = (my - 5) + 'px';
+    });
+    function animRing() {
+      rx += (mx - rx - 18) * 0.12;
+      ry += (my - ry - 18) * 0.12;
+      cursorRing.style.left = rx + 'px';
+      cursorRing.style.top = ry + 'px';
+      requestAnimationFrame(animRing);
+    }
+    animRing();
+    document.querySelectorAll('a, button').forEach(function(el) {
+      el.addEventListener('mouseenter', function() {
+        cursor.style.transform = 'scale(2.5)';
+        cursorRing.style.transform = 'scale(1.5)';
+        cursorRing.style.borderColor = 'var(--cyan)';
+      });
+      el.addEventListener('mouseleave', function() {
+        cursor.style.transform = 'scale(1)';
+        cursorRing.style.transform = 'scale(1)';
+        cursorRing.style.borderColor = 'rgba(0,229,255,0.5)';
+      });
+    });
+
+    // PARTICLES
+    var canvas = document.getElementById('particles');
+    var ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    var pts = [];
+    for (var i = 0; i < 60; i++) {
+      pts.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, vx: (Math.random()-0.5)*0.35, vy: (Math.random()-0.5)*0.35, r: Math.random()*1.4+0.3, o: Math.random()*0.4+0.08 });
+    }
+    function drawP() {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      for (var i = 0; i < pts.length; i++) {
+        var p = pts[i];
+        p.x += p.vx; p.y += p.vy;
+        if (p.x < 0) p.x = canvas.width;
+        if (p.x > canvas.width) p.x = 0;
+        if (p.y < 0) p.y = canvas.height;
+        if (p.y > canvas.height) p.y = 0;
+        ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+        ctx.fillStyle = 'rgba(0,229,255,'+p.o+')'; ctx.fill();
+        for (var j = i+1; j < pts.length; j++) {
+          var q = pts[j];
+          var dx = p.x-q.x, dy = p.y-q.y, d = Math.sqrt(dx*dx+dy*dy);
+          if (d < 130) {
+            ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(q.x,q.y);
+            ctx.strokeStyle = 'rgba(0,102,255,'+(0.12*(1-d/130))+')';
+            ctx.lineWidth = 0.5; ctx.stroke();
+          }
+        }
+      }
+      requestAnimationFrame(drawP);
+    }
+    drawP();
+    window.addEventListener('resize', function() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
+
+    // STATUS BADGE ROTATION — fade out, swap text, fade in
+    var statuses = [
+      'СИСТЕМА ИНИЦИАЛИЗИРУЕТСЯ',
+      'ЗАГРУЖАЕМ НЕЙРОСЕТИ',
+      'ГОТОВИМ ИНТЕРФЕЙС',
+      'СКОРО ОТКРЫТИЕ'
+    ];
+    var si = 0;
+    var badge = document.getElementById('statusBadge');
+    var statusText = document.getElementById('statusText');
+    setInterval(function() {
+      // fade out
+      badge.style.opacity = '0';
+      setTimeout(function() {
+        // swap text while invisible
+        si = (si + 1) % statuses.length;
+        statusText.textContent = statuses[si];
+        // fade in
+        badge.style.opacity = '1';
+      }, 400);
+    }, 3000);
+</script>
+</body>
+</html>
